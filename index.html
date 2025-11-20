@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Call Analysis & Invoicing</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+            color: #333;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .form-wrapper {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 3rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .form-header h2 {
+            color: #2c3e50;
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-header p {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.8rem;
+            position: relative;
+        }
+
+        .form-group.hidden,
+        .hidden {
+            display: none;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.6rem;
+            color: #2c3e50;
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e1e8ed;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #fff;
+            color: #2c3e50;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-group select {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%232c3e50%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 0.8em;
+            cursor: pointer;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .form-group input[type="file"] {
+            padding: 0.8rem;
+            cursor: pointer;
+        }
+
+        .form-group input[type="file"]::-webkit-file-upload-button {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-right: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input[type="file"]::-webkit-file-upload-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            margin-top: 0.5rem;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+            transform: scale(1.2);
+            cursor: pointer;
+        }
+
+        .checkbox-group label {
+            margin-bottom: 0;
+            cursor: pointer;
+            font-weight: 500;
+            text-transform: none;
+            letter-spacing: normal;
+        }
+
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-top: 2.5rem;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover:not(:disabled)::before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+            box-shadow: 0 5px 15px rgba(46, 204, 113, 0.4);
+        }
+
+        .btn-success:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(46, 204, 113, 0.6);
+        }
+
+        .response-box {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+            font-family: "Courier New", monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .loading {
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .error {
+            color: #e74c3c;
+            border-left-color: #e74c3c;
+        }
+
+        #ai-results-wrapper {
+            padding: 1.5rem 1.5rem 0.1rem 1.5rem;
+            margin-bottom: 1.8rem;
+            background-color: rgba(118, 75, 162, 0.05);
+            border: 1px solid rgba(118, 75, 162, 0.1);
+            border-radius: 15px;
+        }
+
+        #ai-results-wrapper h3 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: #2c3e50;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 1rem;
+        }
+
+        /* Error styling for required fields */
+        .form-group input.error-border,
+        .form-group select.error-border {
+            border-color: #e74c3c;
+            box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1);
+        }
+
+        .required-field-label::after {
+            content: " *";
+            color: #e74c3c;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <form id="call-form" class="form-wrapper">
+            <div class="form-header">
+                <h2>📞 Call Processing</h2>
+                <p>Analyze calls, book appointments, and create invoices</p>
+            </div>
+
+            <div class="form-group">
+                <label for="name">👤 Your Name:</label>
+                <input type="text" name="name" id="name" placeholder="Will be auto-filled after analysis" />
+            </div>
+
+            <div class="form-group">
+                <label for="email">📧 Email Address:</label>
+                <input type="email" name="email" id="email" placeholder="your.email@example.com" />
+            </div>
+
+            <!-- Country Code Field -->
+            <div class="form-group">
+                <label for="country_code">🌍 Country Code (Optional)</label>
+                <input type="text" name="country_code" id="country_code" placeholder="+1" />
+            </div>
+
+            <div class="form-group">
+                <label for="phone">📱 Phone Number:</label>
+                <input type="tel" name="phone" id="phone" required placeholder="(555) 123-4567" />
+            </div>
+
+            <!-- NEW: Status of Call Input (Required) -->
+            <div class="form-group">
+                <label for="status_of_call" class="required-field-label">📞 Status of Call:</label>
+                <select name="status_of_call" id="status_of_call" required>
+                    <option value="" disabled selected>-- Select Status --</option>
+                    <option value="Incoming">Incoming</option>
+                    <option value="Outgoing">Outgoing</option>
+                </select>
+            </div>
+
+            <div id="ai-results-wrapper" class="hidden">
+                <h3>AI Analysis Results (Editable)</h3>
+                <div class="form-group">
+                    <label for="summary">Call Summary</label>
+                    <textarea id="summary" name="summary" rows="4"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="calltype">Call Type</label>
+                    <input type="text" id="calltype" name="calltype" />
+                </div>
+                <div class="form-group">
+                    <label for="sentiment">Sentiment</label>
+                    <input type="text" id="sentiment" name="sentiment" />
+                </div>
+                <div class="form-group">
+                    <label for="qualityScore">Quality Score</label>
+                    <input type="number" id="qualityScore" name="qualityScore" step="1" min="1" max="10" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="checkbox-group">
+                    <input type="checkbox" name="want_to_book" id="want_to_book" />
+                    <label for="want_to_book">✅ Want to book appointment</label>
+                </div>
+            </div>
+
+            <!-- NEW: Type of Meeting Input (Conditional Mandatory) -->
+            <div class="form-group hidden" id="type-of-meeting-group">
+                <label for="type_of_meeting" id="type-of-meeting-label">🤝 Type of Meeting:</label>
+                <select name="type_of_meeting" id="type_of_meeting">
+                    <option value="" disabled selected>-- Select Type --</option>
+                    <option value="On call">On call</option>
+                    <option value="On Google Meet / Zoom Meet">On Google Meet / Zoom Meet</option>
+                    <option value="In person">In person</option>
+                </select>
+            </div>
+
+            <!-- Team Member Selection -->
+            <div class="form-group hidden" id="team-member-group">
+                <label for="team_member" id="team-member-label">👥 Select Team Member:</label>
+                <select name="team_member" id="team_member">
+                    <option value="" disabled selected>-- Select a team member --</option>
+                    <option value="TM-o3yXlu82ufz_p">Gauri</option>
+                    <option value="TM1sE9gul9lzRmW1">Shafoli</option>
+                    <option value="TMOAYHq8Vqu4kSad">Monica</option>
+                </select>
+            </div>
+
+            <!-- Date Input -->
+            <div class="form-group hidden" id="booking-date-group">
+                <label for="booking_date" id="booking-date-label">📅 Booking Date:</label>
+                <input type="date" name="booking_date" id="booking_date" />
+            </div>
+
+            <!-- Product Selection moved here to be before Check Availability -->
+            <div class="form-group hidden" id="product-group">
+                <label for="product" id="product-label">🛍️ Select a Product for Invoice:</label>
+                <select name="product" id="product">
+                    <option value="" disabled selected>--Please choose an option--</option>
+                    <option value="15 min consultancy - Free|0" data-duration-minutes="15"
+                        data-service-variation-id="FUE6HCZTLUALSBU6FFYZX2TT">15 min consultancy - Free - 15 minutes $0
+                    </option>
+                    <option value="30 Minutes Consultancy|7500" data-duration-minutes="30"
+                        data-service-variation-id="HZ35GMSMDLCOXAPN44XEQ7JZ">30 Minutes Consultancy - 30 minutes $75
+                    </option>
+                    <option value="30 minutes Consultancy|10000" data-duration-minutes="30"
+                        data-service-variation-id="HZ35GMSMDLCOXAPN44XEQ7JZ">30 minutes Consultancy- 30 minutes $100
+                    </option>
+                    <option value="30-45 minutes Consultancy|15000" data-duration-minutes="45"
+                        data-service-variation-id="V3SGEG44JP5NFYGGSRYK5YQ3">45 minutes Consultancy - 45 minutes
+                        $150</option>
+                    <option value="1 hour Consultancy|20000" data-duration-minutes="60"
+                        data-service-variation-id="LX4U7FFQCOEU2W5KSSYLWQDS">1 hour Consultancy - 1 hour $200</option>
+                </select>
+            </div>
+
+            <!-- Time Select Dropdowns -->
+            <div class="form-group hidden" id="booking-time-group">
+                <label>⏰ Select Time:</label>
+                <div style="display: flex; gap: 1rem;">
+                    <div style="flex: 1;">
+                        <label for="booking_hour" style="font-size: 0.8rem; margin-bottom: 0.3rem;">Hour:</label>
+                        <select name="booking_hour" id="booking_hour">
+                            <option value="" disabled selected>-- Hour --</option>
+                            <!-- Options will be populated by JS -->
+                        </select>
+                    </div>
+                    <div style="flex: 1;">
+                        <label for="booking_minute" style="font-size: 0.8rem; margin-bottom: 0.3rem;">Minutes:</label>
+                        <select name="booking_minute" id="booking_minute">
+                            <option value="" disabled selected>-- Minutes --</option>
+                            <!-- Options will be populated by JS -->
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="audio_file">🎵 Upload Call Audio (Optional):</label>
+                <!-- Removed 'required' to make it optional -->
+                <input type="file" name="audio_file" id="audio_file" accept="audio/*" />
+            </div>
+
+            <!-- NEW: Manual Call Summary Input (Conditional) -->
+            <div class="form-group hidden" id="manual-summary-group">
+                <label for="call_summary_manual">📝 Manual Call Summary (Required if no audio is uploaded):</label>
+                <textarea id="call_summary_manual" name="call_summary_manual" rows="4"
+                    placeholder="Enter a brief summary of the call..."></textarea>
+            </div>
+
+            <div class="button-group">
+                <!-- Added ID and 'disabled' state for conditional enabling -->
+                <button type="submit" class="btn btn-primary" id="submit-analysis-btn" disabled>
+                    🚀 Submit for Analysis
+                </button>
+                <button id="submit-booking-btn" class="btn btn-success" type="button">
+                    📋 Submit Booking / Invoice
+                </button>
+            </div>
+
+            <div id="response" class="response-box" style="display: none"></div>
+        </form>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.43/moment-timezone-with-data.min.js"></script>
+
+    <script>
+        const form = document.getElementById("call-form");
+        const responseBox = document.getElementById("response");
+        const submitBookingBtn = document.getElementById("submit-booking-btn");
+        const submitAnalysisBtn = document.getElementById("submit-analysis-btn"); // NEW
+        const wantToBookCheckbox = document.getElementById("want_to_book");
+        const aiResultsWrapper = document.getElementById("ai-results-wrapper");
+        const emailInput = document.getElementById("email");
+
+        // Booking Fields
+        const teamMemberGroup = document.getElementById("team-member-group");
+        const teamMemberSelect = document.getElementById("team_member");
+        const teamMemberLabel = document.getElementById("team-member-label");
+        const bookingDateGroup = document.getElementById("booking-date-group");
+        const bookingDateInput = document.getElementById("booking_date");
+        const bookingDateLabel = document.getElementById("booking-date-label");
+        const bookingTimeGroup = document.getElementById("booking-time-group");
+        const bookingHourSelect = document.getElementById("booking_hour");
+        const bookingMinuteSelect = document.getElementById("booking_minute");
+        const productSelect = document.getElementById("product");
+        const productGroup = document.getElementById("product-group");
+        const productLabel = document.getElementById("product-label");
+        
+        // NEW: Type of Meeting Fields
+        const typeOfMeetingGroup = document.getElementById("type-of-meeting-group");
+        const typeOfMeetingSelect = document.getElementById("type_of_meeting");
+        const typeOfMeetingLabel = document.getElementById("type-of-meeting-label");
+        
+        // NEW: Audio/Summary Fields
+        const audioFileInput = document.getElementById("audio_file");
+        const manualSummaryGroup = document.getElementById("manual-summary-group");
+        const manualSummaryInput = document.getElementById("call_summary_manual");
+
+
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const dd = String(today.getDate()).padStart(2, '0');
+        bookingDateInput.min = `${yyyy}-${mm}-${dd}`;
+
+        let lastAnalysisData = null;
+
+        /**
+         * Calculates the one-hour range based on the current submission time.
+         * e.g., 10:30 AM -> "10-11 AM", 11:00 AM -> "11-12 PM", 12:30 PM -> "12-1 PM"
+         * @returns {string} The formatted time range.
+         */
+        function getSubmissionTimeRange() {
+            const now = moment();
+            const start = now.clone().startOf('hour');
+            const end = start.clone().add(1, 'hour');
+            // Format: 10-11 AM, 11-12 PM, 12-1 PM
+            return `${start.format('h')}-${end.format('h A')}`;
+        }
+
+        /**
+         * Toggles the visibility and required status of booking-related fields.
+         */
+        function toggleBookingFields() {
+            const isBooking = wantToBookCheckbox.checked;
+
+            // Make email, team member, and type of meeting required when booking
+            emailInput.required = isBooking;
+            teamMemberSelect.required = isBooking;
+            typeOfMeetingSelect.required = isBooking; // NEW
+
+            if (isBooking) {
+                teamMemberGroup.classList.remove("hidden");
+                bookingDateGroup.classList.remove("hidden");
+                productGroup.classList.remove("hidden");
+                bookingTimeGroup.classList.remove("hidden");
+                typeOfMeetingGroup.classList.remove("hidden"); // NEW
+                populateTimeDropdown();
+            } else {
+                teamMemberGroup.classList.add("hidden");
+                bookingDateGroup.classList.add("hidden");
+                bookingTimeGroup.classList.add("hidden");
+                productGroup.classList.add("hidden");
+                typeOfMeetingGroup.classList.add("hidden"); // NEW
+
+                // Clear field values
+                teamMemberSelect.value = "";
+                bookingDateInput.value = "";
+                bookingHourSelect.innerHTML = '<option value="" disabled selected>-- Hour --</option>';
+                bookingMinuteSelect.innerHTML = '<option value="" disabled selected>-- Minutes --</option>';
+                productSelect.value = "";
+                typeOfMeetingSelect.value = ""; // NEW
+
+                // Clear any error states
+                const errorElements = document.querySelectorAll('.error-border');
+                errorElements.forEach(el => el.classList.remove('error-border'));
+                const requiredLabels = document.querySelectorAll('.required-field-label');
+                requiredLabels.forEach(el => el.classList.remove('required-field-label'));
+            }
+        }
+
+        /**
+         * Populates the hour and minute dropdowns for booking time.
+         */
+        function populateTimeDropdown() {
+            // Populate hour dropdown (11 AM to 6 PM)
+            bookingHourSelect.innerHTML = '<option value="" disabled selected>-- Hour --</option>';
+            for (let hour = 11; hour <= 18; hour++) {
+                const hourStr = hour.toString().padStart(2, '0');
+                const displayHour = hour > 12 ? `${hour - 12}:00 PM` : hour === 12 ? '12:00 PM' : `${hour}:00 AM`;
+                const option = document.createElement('option');
+                option.value = hourStr;
+                option.textContent = displayHour;
+                bookingHourSelect.appendChild(option);
+            }
+
+            // Populate minute dropdown (0, 15, 30, 45) for cleaner booking
+            bookingMinuteSelect.innerHTML = '<option value="" disabled selected>-- Minutes --</option>';
+            for (let minute = 0; minute < 60; minute += 1) { // Changed to every minute for flexibility
+                const minStr = minute.toString().padStart(2, '0');
+                const option = document.createElement('option');
+                option.value = minStr;
+                option.textContent = minStr;
+                bookingMinuteSelect.appendChild(option);
+            }
+        }
+        
+        /**
+         * NEW: Handles the state of the "Submit for Analysis" button and manual summary field.
+         */
+        function updateAnalysisSubmissionState() {
+            const hasAudio = audioFileInput.files.length > 0;
+            const hasSummary = manualSummaryInput.value.trim().length > 0;
+
+            if (hasAudio) {
+                // Audio uploaded: Hide manual summary, enable button
+                manualSummaryGroup.classList.add("hidden");
+                manualSummaryInput.required = false;
+                submitAnalysisBtn.disabled = false;
+            } else {
+                // No audio: Show manual summary, enable button only if summary is present
+                manualSummaryGroup.classList.remove("hidden");
+                manualSummaryInput.required = true;
+                submitAnalysisBtn.disabled = !hasSummary;
+            }
+        }
+
+
+        // Event listeners for NEW Audio/Summary Logic
+        audioFileInput.addEventListener("change", updateAnalysisSubmissionState);
+        manualSummaryInput.addEventListener("input", updateAnalysisSubmissionState);
+
+        // Clear error states when user makes changes to required fields
+        [teamMemberSelect, bookingDateInput, productSelect, typeOfMeetingSelect].forEach(field => {
+            field.addEventListener('change', function () {
+                if (this.value) {
+                    this.classList.remove('error-border');
+                    const labelId = this.id + '-label';
+                    const label = document.getElementById(labelId);
+                    if (label) {
+                        label.classList.remove('required-field-label');
+                    }
+                }
+            });
+        });
+
+        toggleBookingFields();
+        wantToBookCheckbox.addEventListener("change", toggleBookingFields);
+        updateAnalysisSubmissionState(); // Initial state check
+
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const hasAudio = audioFileInput.files.length > 0;
+            const hasSummary = manualSummaryInput.value.trim().length > 0;
+
+            if (!hasAudio && !hasSummary) {
+                // Should not happen if the button is correctly disabled, but as a fallback
+                responseBox.className = "response-box error";
+                responseBox.innerText = "❌ Please upload an audio file or enter a manual call summary.";
+                return;
+            }
+            
+            // Check required fields (e.g. status_of_call) for the initial submission
+            const statusOfCallSelect = document.getElementById('status_of_call');
+            if (!statusOfCallSelect.value) {
+                responseBox.style.display = "block";
+                responseBox.className = "response-box error";
+                responseBox.innerText = "❌ 'Status of Call' is a required field.";
+                statusOfCallSelect.classList.add('error-border');
+                return;
+            } else {
+                statusOfCallSelect.classList.remove('error-border');
+            }
+
+
+            const submissionTimeRange = getSubmissionTimeRange();
+
+            responseBox.style.display = "block";
+            responseBox.className = "response-box loading";
+
+            if (hasAudio) {
+                // --- Audio Analysis Flow ---
+                responseBox.innerText = "Analyzing call... 🧠🎧 Please wait...";
+
+                const formData = new FormData(form);
+                // NEW: Add submission time range to form data
+                formData.append('submission_time_range', submissionTimeRange);
+
+                try {
+                    const response = await fetch(
+                        "https://n8n.srv898271.hstgr.cloud/webhook/ec2b9080-f1f4-4dc4-bafc-a91dfb3e59f32", {
+                        method: "POST",
+                        body: formData,
+                    }
+                    );
+
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        throw new Error(`Server returned status ${response.status}. Response: ${errorText}`);
+                    }
+
+                    const data = await response.json();
+                    lastAnalysisData = data;
+
+                    document.getElementById('name').value = data.name || '';
+                    document.getElementById('summary').value = data.summary || '';
+                    document.getElementById('calltype').value = data.calltype || '';
+                    document.getElementById('sentiment').value = data.sentiment || '';
+                    document.getElementById('qualityScore').value = data.qualityScore || '';
+
+                    aiResultsWrapper.classList.remove("hidden");
+
+                    responseBox.className = "response-box";
+                    responseBox.innerText = "✅ Analysis Complete! Please review and edit the auto-filled results above. When ready, click 'Submit Booking / Invoice'.";
+
+                } catch (err) {
+                    responseBox.className = "response-box error";
+                    responseBox.innerText = "❌ Error during analysis: " + err.message;
+                }
+            } else {
+                // --- Manual Summary Flow (Skip AI) ---
+                responseBox.innerText = "✅ Summary saved! Proceed to 'Submit Booking / Invoice'.";
+
+                // Simulate analysis data using manual summary
+                lastAnalysisData = {
+                    name: document.getElementById('name').value || '',
+                    summary: manualSummaryInput.value,
+                    calltype: 'Manual Entry',
+                    sentiment: 'N/A',
+                    qualityScore: 10,
+                    // The submission time range is implicitly ready to be added to the final payload
+                };
+
+                // Populate AI result fields with manual data
+                document.getElementById('name').value = lastAnalysisData.name;
+                document.getElementById('summary').value = lastAnalysisData.summary;
+                document.getElementById('calltype').value = lastAnalysisData.calltype;
+                document.getElementById('sentiment').value = lastAnalysisData.sentiment;
+                document.getElementById('qualityScore').value = lastAnalysisData.qualityScore;
+
+                aiResultsWrapper.classList.remove("hidden");
+            }
+
+        });
+
+        function getFormDataAsObject() {
+            // Get phone and strip non-digits
+            let phone = document.getElementById("phone").value.trim();
+            phone = phone.replace(/\D/g, "");
+
+            // Get country code and set default to "+1" if empty
+            const countryCode = document.getElementById("country_code").value.trim() || "+1";
+
+            const selectedProductOption = productSelect.options[productSelect.selectedIndex];
+            const productDuration = selectedProductOption ? selectedProductOption.getAttribute('data-duration-minutes') : null;
+            const serviceVariationId = selectedProductOption ? selectedProductOption.getAttribute('data-service-variation-id') : null;
+
+            // Format booking_time as UTC ISO string if booking
+            let bookingTimeISO = "";
+            if (wantToBookCheckbox.checked && bookingDateInput.value && bookingHourSelect.value && bookingMinuteSelect.value) {
+                // Combine date and time as Toronto time, then convert to UTC ISO string
+                const hour = bookingHourSelect.value;
+                const minute = bookingMinuteSelect.value;
+                const local = moment.tz(
+                    `${bookingDateInput.value} ${hour}:${minute}`,
+                    "YYYY-MM-DD HH:mm",
+                    "America/Toronto"
+                );
+                bookingTimeISO = local.utc().format("YYYY-MM-DDTHH:mm:00[Z]");
+            }
+
+            // NEW: Get submission time range
+            const submissionTimeRange = getSubmissionTimeRange();
+
+            return {
+                name: document.getElementById("name").value,
+                email: document.getElementById("email").value,
+                country_code: countryCode,
+                phone: phone,
+                team_member_id: document.getElementById("team_member").value,
+                booking_date: document.getElementById("booking_date").value,
+                booking_time: bookingTimeISO, // Pass in UTC ISO format
+                summary: document.getElementById("summary").value,
+                calltype: document.getElementById("calltype").value,
+                sentiment: document.getElementById("sentiment").value,
+                qualityScore: document.getElementById("qualityScore").value,
+                want_to_book: document.getElementById("want_to_book").checked,
+                product: productSelect.value,
+                product_duration: productDuration,
+                service_variation_id: serviceVariationId,
+                status_of_call: document.getElementById("status_of_call").value, // NEW
+                type_of_meeting: document.getElementById("type_of_meeting").value, // NEW
+                submission_time_range: submissionTimeRange // NEW
+            };
+        }
+
+        submitBookingBtn.addEventListener("click", async () => {
+            if (!lastAnalysisData) {
+                responseBox.style.display = "block";
+                responseBox.className = "response-box error";
+                responseBox.innerText = "❌ Please submit for analysis (or enter a manual summary) first before submitting a booking or invoice.";
+                return;
+            }
+
+            const isBooking = wantToBookCheckbox.checked;
+
+            // Basic Form Validation for Booking/Invoice
+            if (isBooking) {
+                if (!emailInput.value.trim()) {
+                    responseBox.style.display = "block";
+                    responseBox.className = "response-box error";
+                    responseBox.innerText = "❌ Email is required to book an appointment and receive an invoice.";
+                    emailInput.focus();
+                    return;
+                }
+                if (!typeOfMeetingSelect.value) { // NEW Validation
+                    responseBox.style.display = "block";
+                    responseBox.className = "response-box error";
+                    responseBox.innerText = "❌ Please select a Type of Meeting.";
+                    typeOfMeetingSelect.focus();
+                    return;
+                }
+                if (!teamMemberSelect.value) {
+                    responseBox.style.display = "block";
+                    responseBox.className = "response-box error";
+                    responseBox.innerText = "❌ Please select a team member for the appointment.";
+                    teamMemberSelect.focus();
+                    return;
+                }
+                if (!document.getElementById("booking_date").value || !bookingHourSelect.value || !bookingMinuteSelect.value) {
+                    responseBox.style.display = "block";
+                    responseBox.className = "response-box error";
+                    responseBox.innerText = "❌ If booking an appointment, please select a date and time (both hour and minutes) before submitting.";
+                    return;
+                }
+                if (!productSelect.value) {
+                    responseBox.style.display = "block";
+                    responseBox.className = "response-box error";
+                    responseBox.innerText = "❌ Please select a product from the dropdown to create an invoice.";
+                    return;
+                }
+            }
+
+
+            const payload = getFormDataAsObject();
+
+            responseBox.style.display = "block";
+            responseBox.className = "response-box loading";
+            responseBox.innerText = "Submitting final data... ⏳";
+
+            try {
+                const resp = await fetch(
+                    "https://n8n.srv898271.hstgr.cloud/webhook/create-square-booking1234", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload),
+                }
+                );
+
+                const responseText = await resp.text();
+                if (!resp.ok) throw new Error(`Server error (status ${resp.status}): ${responseText}`);
+                if (!responseText) throw new Error("Server returned a successful but empty response. Check the 'Respond to Webhook' node in your n8n workflow.");
+
+                const result = JSON.parse(responseText);
+
+                responseBox.className = "response-box";
+                responseBox.innerText = "✅ Submission successful!\n\n" + JSON.stringify(result, null, 2);
+
+                form.reset();
+                aiResultsWrapper.classList.add("hidden");
+                lastAnalysisData = null;
+                toggleBookingFields();
+                updateAnalysisSubmissionState(); // Reset button/summary state
+
+            } catch (err) {
+                responseBox.className = "response-box error";
+                responseBox.innerText = "❌ Error during submission: " + err.message;
+            }
+        });
+    </script>
+</body>
+
+</html>

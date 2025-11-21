@@ -309,6 +309,7 @@
                     <option value="" disabled selected>-- Select Status --</option>
                     <option value="Incoming">Incoming</option>
                     <option value="Outgoing">Outgoing</option>
+                    <option value="Stuck">Stuck</option>
                 </select>
             </div>
 
@@ -345,7 +346,7 @@
                 <select name="type_of_meeting" id="type_of_meeting">
                     <option value="" disabled selected>-- Select Type --</option>
                     <option value="On call">On call</option>
-                    <option value="On Google Meet / Zoom Meet">On Google Meet / Zoom Meet</option>
+                    <option value="On Google Meet / Zoom Meet">On Google Meet / Zoom Call</option>
                     <option value="In person">In person</option>
                 </select>
             </div>
@@ -683,9 +684,9 @@
                 lastAnalysisData = {
                     name: document.getElementById('name').value || '',
                     summary: manualSummaryInput.value,
-                    calltype: 'Manual Entry',
-                    sentiment: 'N/A',
-                    qualityScore: 10,
+                    calltype: '-',
+                    sentiment: '-',
+                    qualityScore: '-',
                     // The submission time range is implicitly ready to be added to the final payload
                 };
 

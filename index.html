@@ -333,6 +333,12 @@
                 </div>
             </div>
 
+             <!-- NEW: Lead By Field (Optional) -->
+            <div class="form-group">
+                <label for="lead_by">👤 Lead by (Optional):</label>
+                <input type="text" name="lead_by" id="lead_by" placeholder="e.g. Shafoli, Gauri" />
+            </div>
+
             <div class="form-group">
                 <div class="checkbox-group">
                     <input type="checkbox" name="want_to_book" id="want_to_book" />
@@ -763,6 +769,7 @@
                 product_duration: productDuration,
                 service_variation_id: serviceVariationId,
                 mode_of_payment: modeOfPayment, // <--- New Field passed to Webhook
+                lead_by: document.getElementById("lead_by").value, // NEW FIELD ADDED HERE
                 status_of_call: document.getElementById("status_of_call").value,
                 type_of_meeting: document.getElementById("type_of_meeting").value,
                 client_type: document.getElementById("client_type").value,

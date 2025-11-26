@@ -779,9 +779,22 @@
                 return;
             }
 
+            const nameInput = document.getElementById("name");
+            if (!nameInput.value.trim()) {
+                responseBox.style.display = "block";
+                responseBox.className = "response-box error";
+                responseBox.innerText = "❌ Client Name is required.";
+                nameInput.classList.add('error-border');
+                nameInput.focus();
+                return; // Stop execution here
+            } else {
+                nameInput.classList.remove('error-border');
+            }
+
             const isBooking = wantToBookCheckbox.checked;
 
             if (isBooking) {
+
                 if (!emailInput.value.trim()) {
                     responseBox.style.display = "block";
                     responseBox.className = "response-box error";

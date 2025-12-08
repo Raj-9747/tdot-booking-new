@@ -288,13 +288,30 @@
 
             <div class="form-group">
                 <label for="email">📧 Email Address:</label>
-                <input type="email" name="email" id="email" placeholder="your.email@example.com" />
+                <input 
+                    type="email" 
+                    name="email" 
+                    id="email" 
+                    placeholder="your.email@example.com"
+                    required
+                    pattern="^[^@\s]+@[^@\s]+\.[^@\s]+$"
+                    title="Please enter a valid email address (must include @ and .)"
+                />
             </div>
+
 
             <!-- Country Code Field -->
             <div class="form-group">
-                <label for="country_code">🌍 Country Code </label>
-                <input type="text" name="country_code" id="country_code" required placeholder="+1" />
+                <label for="country_code">🌍 Country Code</label>
+                <input 
+                    type="text" 
+                    name="country_code" 
+                    id="country_code" 
+                    required 
+                    placeholder="+1"
+                    pattern="\+[0-9]+"
+                    title="Please enter valid country code (e.g., +1, +91)"
+                />
             </div>
 
             <div class="form-group">
@@ -905,6 +922,7 @@
 
 
 </html>
+
 
 
 

@@ -608,7 +608,7 @@
 
         function populateTimeDropdown() {
             bookingHourSelect.innerHTML = '<option value="" disabled selected>-- Hour --</option>';
-            for (let hour = 11; hour <= 18; hour++) {
+            for (let hour = 10; hour <= 18; hour++) {
                 const hourStr = hour.toString().padStart(2, '0');
                 const displayHour = hour > 12 ? `${hour - 12}:00 PM` : hour === 12 ? '12:00 PM' : `${hour}:00 AM`;
                 const option = document.createElement('option');
@@ -922,6 +922,7 @@
 
 
 </html>
+
 
 
 

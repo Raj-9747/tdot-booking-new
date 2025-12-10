@@ -316,7 +316,8 @@
 
             <div class="form-group">
                 <label for="phone">📱 Phone Number:</label>
-                <input type="tel" name="phone" id="phone" required placeholder="(555) 123-4567" />
+                <input type="tel" name="phone" id="phone" required placeholder="(555) 123-4567" pattern="^\d{10}$" maxlength="10" minlength="10" title="Phone number must be exactly 10 digits"/>
+
             </div>
 
             <!-- NEW: Status of Call Input (Required) -->
@@ -503,6 +504,20 @@
         src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.43/moment-timezone-with-data.min.js"></script>
 
     <script>
+
+const phoneInput = document.getElementById("phone");
+
+phoneInput.addEventListener("input", function () {
+    // Remove all non-digit characters
+    this.value = this.value.replace(/\D/g, "");
+
+    // Limit to 10 digits
+    if (this.value.length > 10) {
+        this.value = this.value.slice(0, 10);
+    }
+});
+
+
         const form = document.getElementById("call-form");
         const responseBox = document.getElementById("response");
         const submitBookingBtn = document.getElementById("submit-booking-btn");
@@ -922,8 +937,3 @@
 
 
 </html>
-
-
-
-
-

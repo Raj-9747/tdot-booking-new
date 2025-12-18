@@ -316,8 +316,17 @@
 
             <div class="form-group">
                 <label for="phone">📱 Phone Number:</label>
-                <input type="tel" name="phone" id="phone" required placeholder="(555) 123-4567" pattern="^\d{10}$" maxlength="10" minlength="10" title="Phone number must be exactly 10 digits"/>
-
+                <!-- <input type="tel" name="phone" id="phone" required placeholder="(555) 123-4567" pattern="^\d{10}$" maxlength="10" minlength="10" title="Phone number must be exactly 10 digits"/> -->
+                <input
+                    type="tel"
+                    name="phone"
+                    id="phone"
+                    required
+                    placeholder="(416) 555-1234"
+                    inputmode="numeric"
+                    autocomplete="tel"
+                    title="Enter a valid 10-digit phone number"
+                />
             </div>
 
             <!-- NEW: Status of Call Input (Required) -->
@@ -505,17 +514,25 @@
 
     <script>
 
-const phoneInput = document.getElementById("phone");
+// const phoneInput = document.getElementById("phone");
 
-phoneInput.addEventListener("input", function () {
-    // Remove all non-digit characters
-    this.value = this.value.replace(/\D/g, "");
+// phoneInput.addEventListener("input", function () {
+//     // Remove all non-digit characters
+//     this.value = this.value.replace(/\D/g, "");
 
-    // Limit to 10 digits
-    if (this.value.length > 10) {
-        this.value = this.value.slice(0, 10);
-    }
-});
+//     // Limit to 10 digits
+//     if (this.value.length > 10) {
+//         this.value = this.value.slice(0, 10);
+//     }
+// });
+
+        const phoneInput = document.getElementById("phone");
+
+        phoneInput.addEventListener("input", function () {
+            let digits = this.value.replace(/\D/g, "");
+            digits = digits.substring(0, 10);
+            this.value = digits;
+        });
 
 
         const form = document.getElementById("call-form");
@@ -824,6 +841,17 @@ phoneInput.addEventListener("input", function () {
         }
 
         submitBookingBtn.addEventListener("click", async () => {
+
+            const phone = document.getElementById("phone").value.trim();
+
+            if (phone.length !== 10) {
+                responseBox.style.display = "block";
+                responseBox.className = "response-box error";
+                responseBox.innerText = "❌ Phone number must be exactly 10 digits.";
+                document.getElementById("phone").focus();
+                return;
+            }
+            
             if (!lastAnalysisData) {
                 responseBox.style.display = "block";
                 responseBox.className = "response-box error";
@@ -937,3 +965,4 @@ phoneInput.addEventListener("input", function () {
 
 
 </html>
+

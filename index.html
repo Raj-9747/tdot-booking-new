@@ -674,15 +674,15 @@
             }
         }
 
-        // audioFileInput.addEventListener("change", updateAnalysisSubmissionState);
+        audioFileInput.addEventListener("change", updateAnalysisSubmissionState);
 
-        audioFileInput.addEventListener("change", () => {
-            submitAnalysisBtn.disabled = true;
+        // audioFileInput.addEventListener("change", () => {
+        //     submitAnalysisBtn.disabled = true;
         
-            setTimeout(() => {
-                submitAnalysisBtn.disabled = false;
-            }, 200);
-        });
+        //     setTimeout(() => {
+        //         submitAnalysisBtn.disabled = false;
+        //     }, 200);
+        // });
         
         manualSummaryInput.addEventListener("input", updateAnalysisSubmissionState);
 
@@ -993,5 +993,6 @@
 
 
 </html>
+
 
 

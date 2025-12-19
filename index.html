@@ -674,7 +674,16 @@
             }
         }
 
-        audioFileInput.addEventListener("change", updateAnalysisSubmissionState);
+        // audioFileInput.addEventListener("change", updateAnalysisSubmissionState);
+
+        audioFileInput.addEventListener("change", () => {
+            submitAnalysisBtn.disabled = true;
+        
+            setTimeout(() => {
+                submitAnalysisBtn.disabled = false;
+            }, 200);
+        });
+        
         manualSummaryInput.addEventListener("input", updateAnalysisSubmissionState);
 
         // Clear error states when user makes changes to required fields
@@ -726,7 +735,26 @@
             if (hasAudio) {
                 responseBox.innerText = "Analyzing call... 🧠🎧 Please wait...";
 
-                const formData = new FormData(form);
+                const formData = new FormData();
+
+                /* Append all non-file fields */
+                new FormData(form).forEach((value, key) => {
+                    if (key !== "audio_file") {
+                        formData.append(key, value);
+                    }
+                });
+                
+                /* Explicitly attach audio file */
+                if (audioFileInput.files.length > 0) {
+                    formData.append("audio_file", audioFileInput.files[0]);
+                }
+
+                if (!audioFileInput.files.length) {
+                    responseBox.className = "response-box error";
+                    responseBox.innerText = "❌ Audio file missing. Please re-upload and try again.";
+                    return;
+                }
+
                 formData.append('submission_time_range', submissionTimeRange);
 
                 try {
@@ -965,4 +993,5 @@
 
 
 </html>
+
 
